@@ -14,14 +14,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
-        httpSecurity.csrf(csrf -> csrf.ignoringRequestMatchers("/eureka/**"));
-        return httpSecurity.build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests((authz) -> authz
+                        .anyRequest().authenticated())
+                .httpBasic(withDefaults());
+        http.csrf(csrf  -> csrf.ignoringRequestMatchers("/eureka/**"));
+        return http.build();
     }
 
 
@@ -41,15 +45,5 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(user);
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated());
-//        return http.build();
-//    }
 }
