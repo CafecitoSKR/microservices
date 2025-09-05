@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.util.concurrent.CompletableFuture;
+
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -54,17 +56,17 @@ public class OrderController {
             @ApiResponse(responseCode = "400",description = "Invalid input"),
     })
     @PostMapping("/order-item")
-    @CircuitBreaker(name = "inventory", fallbackMethod = "fallBackMethod")
+    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
     @TimeLimiter(name = "inventory")
     @Retry(name = "inventory")
-    public ResponseEntity<OrderItemResource> createOrderItem(@RequestBody CreateOrderItemResource resource) {
+    public CompletableFuture<ResponseEntity<OrderItemResource>> createOrderItem(@RequestBody CreateOrderItemResource resource) {
         var orderItem = orderItemCommandService.handle(CreateOrderItemCommandFromResourceAssembler.fromResource(resource));
         if(orderItem.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return CompletableFuture.completedFuture(ResponseEntity.notFound().build());
         }
         var orderItemCreated = orderItem.get();
 
-        return new ResponseEntity<>(OrderItemResourceFromEntityAssembler.fromEntity(orderItemCreated), CREATED);
+        return CompletableFuture.completedFuture(new ResponseEntity<>(OrderItemResourceFromEntityAssembler.fromEntity(orderItemCreated), CREATED));
 
     }
 
@@ -72,8 +74,8 @@ public class OrderController {
     @TimeLimiter(name = "inventory")
     @Retry(name = "inventory")
     @GetMapping("/helloWorld")
-    public String helloWorld() {
-        return "Hello from Order Service!";
+    public CompletableFuture<String> helloWorld() {
+        return CompletableFuture.completedFuture("Hola");
     }
 
     @GetMapping("/fail")
