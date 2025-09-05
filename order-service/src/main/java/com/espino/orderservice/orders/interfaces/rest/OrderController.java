@@ -10,6 +10,9 @@ import com.espino.orderservice.orders.interfaces.rest.transform.CreateOrderComma
 import com.espino.orderservice.orders.interfaces.rest.transform.CreateOrderItemCommandFromResourceAssembler;
 import com.espino.orderservice.orders.interfaces.rest.transform.OrderItemResourceFromEntityAssembler;
 import com.espino.orderservice.orders.interfaces.rest.transform.OrderResourceFromEntityAssembler;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -51,6 +54,9 @@ public class OrderController {
             @ApiResponse(responseCode = "400",description = "Invalid input"),
     })
     @PostMapping("/order-item")
+    @CircuitBreaker(name = "inventory", fallbackMethod = "fallBackMethod")
+    @TimeLimiter(name = "inventory")
+    @Retry(name = "inventory")
     public ResponseEntity<OrderItemResource> createOrderItem(@RequestBody CreateOrderItemResource resource) {
         var orderItem = orderItemCommandService.handle(CreateOrderItemCommandFromResourceAssembler.fromResource(resource));
         if(orderItem.isEmpty()) {
@@ -62,9 +68,22 @@ public class OrderController {
 
     }
 
+    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
+    @TimeLimiter(name = "inventory")
+    @Retry(name = "inventory")
     @GetMapping("/helloWorld")
     public String helloWorld() {
-        return "Hello from Product Service!";
+        return "Hello from Order Service!";
+    }
+
+    @GetMapping("/fail")
+    public ResponseEntity<String> fail() {
+        return ResponseEntity.status(500).body("Simulated failure");
+    }
+
+    //TODO: Global Exception Handler
+    public String fallbackMethod(Throwable throwable) {
+        return "Sorry, we're currently having some technical difficulties processing the order. Please try again later.";
     }
 
 
