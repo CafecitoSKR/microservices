@@ -84,8 +84,13 @@ public class OrderController {
     }
 
     //TODO: Global Exception Handler
-    public String fallbackMethod(Throwable throwable) {
-        return "Sorry, we're currently having some technical difficulties processing the order. Please try again later.";
+    public CompletableFuture<ResponseEntity<OrderItemResource>> fallbackMethod(
+            CreateOrderItemResource resource, Throwable throwable) {
+
+        return CompletableFuture.completedFuture(
+                ResponseEntity.status(503)
+                        .body(null)
+        );
     }
 
 
