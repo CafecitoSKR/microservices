@@ -78,18 +78,12 @@ public class OrderController {
         return CompletableFuture.completedFuture("Hola");
     }
 
-    @GetMapping("/fail")
-    public ResponseEntity<String> fail() {
-        return ResponseEntity.status(500).body("Simulated failure");
-    }
-
     //TODO: Global Exception Handler
-    public CompletableFuture<ResponseEntity<OrderItemResource>> fallbackMethod(
-            CreateOrderItemResource resource, Throwable throwable) {
+    public CompletableFuture<ResponseEntity<String>> fallbackMethod(CreateOrderItemResource resource, Throwable throwable) {
 
         return CompletableFuture.completedFuture(
                 ResponseEntity.status(503)
-                        .body(null)
+                        .body("FallbackMethod")
         );
     }
 
