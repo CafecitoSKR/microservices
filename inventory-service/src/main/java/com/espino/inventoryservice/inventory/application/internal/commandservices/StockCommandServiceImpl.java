@@ -4,15 +4,17 @@ import com.espino.inventoryservice.inventory.domain.aggregates.commands.CreateSt
 import com.espino.inventoryservice.inventory.domain.aggregates.model.Stock;
 import com.espino.inventoryservice.inventory.domain.services.StockCommandService;
 import com.espino.inventoryservice.inventory.infrastructure.persistence.jpa.repositories.StockRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class StockCommandServiceImpl implements StockCommandService {
     private final StockRepository stockRepository;
+
+    public StockCommandServiceImpl(StockRepository stockRepository) {
+        this.stockRepository = stockRepository;
+    }
 
     @Override
     public Optional<Stock> handle(CreateStockCommand command) {
@@ -21,3 +23,5 @@ public class StockCommandServiceImpl implements StockCommandService {
         return Optional.of(stockCreated);
     }
 }
+
+

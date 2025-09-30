@@ -34,5 +34,23 @@ public class Stock extends AuditableAbstractAggregateRoot<Stock> {
         this.reserved = 0;
     }
 
+    public void reserve(int quantity){
+        if (quantity <= 0) throw new IllegalArgumentException("qty must be > 0");
+        if (onHand - reserved < quantity) throw new IllegalStateException("insufficient stock");
+        this.reserved += quantity;
+    }
+    public void release(int quantity){
+        if (quantity <= 0) throw new IllegalArgumentException("qty must be > 0");
+        if (onHand - reserved < quantity) throw new IllegalStateException("insufficient stock");
+        this.reserved -= quantity;
+    }
+    public void confirm(int quantity){
+        if (quantity <= 0) throw new IllegalArgumentException("quantity must be > 0");
+        if (reserved < quantity) throw new IllegalStateException("cannot confirm more than reserved");
+        this.reserved -= quantity;
+        this.onHand  -= quantity;
+    }
+
+
 
 }

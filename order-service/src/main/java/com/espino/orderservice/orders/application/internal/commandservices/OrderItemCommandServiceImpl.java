@@ -11,7 +11,6 @@
     import lombok.AllArgsConstructor;
     import org.springframework.kafka.core.KafkaTemplate;
     import org.springframework.stereotype.Service;
-    import org.springframework.web.reactive.function.client.WebClient;
 
     import java.util.Optional;
 

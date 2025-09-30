@@ -79,12 +79,9 @@ public class OrderController {
     }
 
     //TODO: Global Exception Handler
-    public CompletableFuture<ResponseEntity<String>> fallbackMethod(CreateOrderItemResource resource, Throwable throwable) {
+    public CompletableFuture<String> fallbackMethod(CreateOrderItemResource resource, Throwable throwable) {
 
-        return CompletableFuture.completedFuture(
-                ResponseEntity.status(503)
-                        .body("FallbackMethod")
-        );
+        return CompletableFuture.supplyAsync(()-> "Oops! Something went wrong, please order after some time!");
     }
 
 
